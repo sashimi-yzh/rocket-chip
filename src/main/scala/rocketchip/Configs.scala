@@ -176,3 +176,8 @@ class WithTimebase(hertz: BigInt) extends Config((site, here, up) => {
 })
 
 class DefaultFPGASmallConfig extends Config(new WithNSmallCores(1) ++ new DefaultFPGAConfig)
+
+class DefaultConfigWithRVFIMonitors extends Config(
+  new WithRVFIMonitors ++
+  new DefaultRV32Config
+)
