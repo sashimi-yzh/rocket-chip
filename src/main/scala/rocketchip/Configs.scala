@@ -179,5 +179,32 @@ class DefaultFPGASmallConfig extends Config(new WithNSmallCores(1) ++ new Defaul
 
 class DefaultConfigWithRVFIMonitors extends Config(
   new WithRVFIMonitors ++
-  new DefaultRV32Config
+  new WithNMemoryChannels(0) ++
+  new WithStatelessBridge ++
+  new BaseConfig().alter((site, here, up) => {
+    case XLen => 32
+    case RocketTilesKey => Seq(
+      RocketTileParams(
+        core = RocketCoreParams(
+          useVM = false,
+          fpu = None,
+          mulDiv = None,
+          useAtomics = false,
+          useCompressed = false),
+        btb = None,
+        dcache = Some(DCacheParams(
+          rowBits = site(L1toL2Config).beatBytes*8,
+          nSets = 256, // 16Kb scratchpad
+          nWays = 1,
+          nTLBEntries = 4,
+          nMSHRs = 0,
+          blockBytes = site(CacheBlockBytes),
+          scratch = Some(0x80000000L))),
+        icache = Some(ICacheParams(
+          rowBits = site(L1toL2Config).beatBytes*8,
+          nSets = 64,
+          nWays = 1,
+          nTLBEntries = 4,
+          blockBytes = site(CacheBlockBytes)))))
+  })
 )

@@ -761,6 +761,8 @@ class RVFIMonitor(implicit p: Parameters) extends BlackBox {
   val xlen = p(XLen)
   val nret = 1
   val io = IO(new Bundle {
+    val clock = Clock()
+    val reset = Bool(INPUT)
     val rvfi_valid = UInt(INPUT, width=nret)
     val rvfi_order = UInt(INPUT, width=8*nret)
     val rvfi_insn = UInt(INPUT, width=32*nret)
@@ -784,6 +786,8 @@ class RVFIMonitor(implicit p: Parameters) extends BlackBox {
 class RocketWithRVFI(implicit p: Parameters) extends Rocket()(p) {
   val rvfi_mon = Module(new RVFIMonitor)
 
+  rvfi_mon.io.clock := clock
+  rvfi_mon.io.reset := reset
   rvfi_mon.io.rvfi_valid := wb_valid
   rvfi_mon.io.rvfi_order := UInt(0)
   rvfi_mon.io.rvfi_insn := wb_reg_inst
