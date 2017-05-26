@@ -189,7 +189,7 @@ class DefaultConfigWithRVFIMonitors extends Config(
           useVM = false,
           fpu = None,
           mulDiv = None,
-//          useAtomics = false,
+          useAtomics = false,
           useCompressed = false),
         btb = None,
         dcache = Some(DCacheParams(
