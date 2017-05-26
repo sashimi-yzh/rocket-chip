@@ -761,7 +761,7 @@ class RVFIMonitor(implicit p: Parameters) extends BlackBox {
   val xlen = p(XLen)
   val nret = 1
   val io = IO(new Bundle {
-    val clock = Clock()
+    val clock = Clock(INPUT)
     val reset = Bool(INPUT)
     val rvfi_valid = UInt(INPUT, width=nret)
     val rvfi_order = UInt(INPUT, width=8*nret)
