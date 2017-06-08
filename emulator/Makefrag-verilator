@@ -57,7 +57,8 @@ VERILATOR_FLAGS := --top-module $(MODEL) \
   --output-split 20000 \
 	-Wno-STMTDLY --x-assign unique \
   -I$(base_dir)/vsrc \
-  -O3 -CFLAGS "$(CXXFLAGS) -DVERILATOR -DTEST_HARNESS=V$(MODEL) -include $(base_dir)/csrc/verilator.h"
+  -O3 -CFLAGS "$(CXXFLAGS) -DVERILATOR -DTEST_HARNESS=V$(MODEL) -include $(base_dir)/csrc/verilator.h" \
+  -Wno-fatal
 cppfiles = $(addprefix $(base_dir)/csrc/, $(addsuffix .cc, $(CXXSRCS)))
 headers = $(wildcard $(base_dir)/csrc/*.h)
 

@@ -803,7 +803,7 @@ class RocketWithRVFI(implicit p: Parameters) extends Rocket()(p) {
   rvfi_mon.io.rvfi_rd_addr := Mux(rf_wen, rf_waddr, UInt(0))
   rvfi_mon.io.rvfi_rd_wdata := Mux(rf_wen && rf_waddr=/=UInt(0), rf_wdata, UInt(0))
   rvfi_mon.io.rvfi_pc_rdata := wb_reg_pc
-  rvfi_mon.io.rvfi_pc_wdata := UInt(0) // TODO HERE
+  rvfi_mon.io.rvfi_pc_wdata := wb_npc
   rvfi_mon.io.rvfi_mem_addr := UInt(0) // TODO HERE
   rvfi_mon.io.rvfi_mem_rmask := UInt(0) // TODO HERE
   rvfi_mon.io.rvfi_mem_wmask := UInt(0) // TODO HERE

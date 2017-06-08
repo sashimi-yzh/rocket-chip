@@ -16,6 +16,7 @@ sim_vsrcs = \
 	$(generated_dir)/$(long_name).behav_srams.v \
 	$(base_dir)/vsrc/$(TB).v \
 	$(base_dir)/vsrc/SimDTM.v \
+    $(base_dir)/vsrc/RVFIMonitor.v \
 	$(bb_vsrcs)
 
 # C sources
