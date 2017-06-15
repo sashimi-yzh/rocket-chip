@@ -433,7 +433,7 @@ class FPToInt(implicit p: Parameters) extends FPUModule()(p) {
   }
 
   io.out.valid := valid
-  io.out.bits.lt := dcmp.io.lt
+  io.out.bits.lt := dcmp.io.lt || (dcmp.io.a.asSInt < 0.S && dcmp.io.b.asSInt >= 0.S)
   io.out.bits.in := in
 }
 
@@ -502,7 +502,7 @@ class FPToFP(val latency: Int)(implicit p: Parameters) extends FPUModule()(p) {
     val isnan1 = maxType.isNaN(in.bits.in1)
     val isnan2 = maxType.isNaN(in.bits.in2)
     val isInvalid = maxType.isSNaN(in.bits.in1) || maxType.isSNaN(in.bits.in2)
-    val isNaNOut = isInvalid || (isnan1 && isnan2)
+    val isNaNOut = isnan1 && isnan2
     val isLHS = isnan2 || in.bits.rm(0) =/= io.lt && !isnan1
     fsgnjMux.exc := isInvalid << 4
     fsgnjMux.data := Mux(isNaNOut, maxType.qNaN, Mux(isLHS, in.bits.in1, in.bits.in2))
@@ -754,15 +754,10 @@ class FPU(cfg: FPUParams)(implicit p: Parameters) extends FPUModule()(p) {
   if (cfg.divSqrt) {
     val divSqrt_killed = Reg(Bool())
 
-    makeDivSqrt(FType.S, wb_ctrl.singleOut)
-    fLen match {
-      case 32 =>
-      case 64 => makeDivSqrt(FType.D, !wb_ctrl.singleOut)
-    }
-
-    def makeDivSqrt(t: FType, en: Bool) = {
+    for (t <- floatTypes) {
+      val tag = !mem_ctrl.singleOut // TODO typeTag
       val divSqrt = Module(new hardfloat.DivSqrtRecFN_small(t.exp, t.sig, 0))
-      divSqrt.io.inValid := en && mem_reg_valid && (mem_ctrl.div || mem_ctrl.sqrt) && !divSqrt_inFlight
+      divSqrt.io.inValid := mem_reg_valid && tag === typeTag(t) && (mem_ctrl.div || mem_ctrl.sqrt) && !divSqrt_inFlight
       divSqrt.io.sqrtOp := mem_ctrl.sqrt
       divSqrt.io.a := maxType.unsafeConvert(fpiu.io.out.bits.in.in1, t)
       divSqrt.io.b := maxType.unsafeConvert(fpiu.io.out.bits.in.in2, t)
